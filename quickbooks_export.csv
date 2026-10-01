@@ -1,0 +1,67 @@
+Date,Transaction Type,Num,Name,Memo,Amount
+08/02/2026,Invoice,INV-10235,Precision Painting Inc,Lawn maintenance,1810.74
+08/02/2026,Invoice,INV-10235,Precision Painting Inc,Lawn maintenance,1810.74
+09/17/2026,Invoice,INV-10236,Green Thumb Landscaping,Deep clean,2154.17
+09/08/2026,Invoice,INV-10237,Sunrise Cleaning Co,Appliance repair,180.5
+09/07/2026,Invoice,INV-10238,Sunrise Cleaning Co,Pest treatment,754.27
+08/18/2026,Invoice,INV-10239,Summit Roofing LLC,Pool opening,454.29
+09/08/2026,Invoice,INV-10240,Clearwater Pool Service,Pest treatment,723.11
+08/19/2026,Invoice,INV-10241,Green Thumb Landscaping,Appliance repair,2011.04
+08/03/2026,Invoice,INV-10242,Rapid Rooter Solutions,Lawn maintenance,1627.68
+08/27/2026,Invoice,INV-10243,Metro Window Cleaning,Lawn maintenance,753.78
+09/12/2026,Invoice,INV-10244,Clearwater Pool Service,Deep clean,728.71
+09/16/2026,Invoice,INV-10245,Martinez HVAC Services,Appliance repair,645.79
+08/15/2026,Invoice,INV-10246,Metro Window Cleaning,Interior paint,1993.71
+08/21/2026,Invoice,INV-10247,Desert Air Conditioning,Emergency callout,604.79
+08/09/2026,Invoice,INV-10248,Martinez HVAC Services,Panel upgrade,723.22
+08/15/2026,Invoice,INV-10249,Summit Roofing LLC,Pool opening,2393.9
+08/10/2026,Invoice,INV-10250,Metro Window Cleaning,Pest treatment,1550.58
+09/03/2026,Invoice,INV-10251,Coastal Tree Care,Pest treatment,693.22
+09/04/2026,Invoice,INV-10252,Green Thumb Landscaping,Interior paint,1854.39
+09/16/2026,Invoice,INV-10253,Northside Pest Control,Drain cleaning,2116.94
+09/25/2026,Invoice,INV-10254,Desert Air Conditioning,Lawn maintenance,1545.68
+09/04/2026,Invoice,INV-10255,Clearwater Pool Service,AC tune-up,2293.98
+08/08/2026,Invoice,INV-10256,Northside Pest Control,Drain cleaning,2238.34
+09/06/2026,Invoice,INV-10257,Dave's Plumbing & Rooter,Tree trimming,2279.04
+08/09/2026,Invoice,INV-10258,Elite Lawn Care,AC tune-up,1624.23
+08/09/2026,Invoice,INV-10258,Elite Lawn Care,AC tune-up,1624.23
+08/28/2026,Invoice,INV-10259,Allied Appliance Repair,Tree trimming,2318.75
+08/26/2026,Invoice,INV-10260,Rapid Rooter Solutions,Panel upgrade,2388.94
+08/15/2026,Invoice,INV-10261,Green Thumb Landscaping,Deep clean,265.98
+09/15/2026,Invoice,INV-10262,Dave's Plumbing & Rooter,Lawn maintenance,1558.91
+08/16/2026,Invoice,INV-10263,Green Thumb Landscaping,Appliance repair,754.93
+09/06/2026,Invoice,INV-10264,Desert Air Conditioning,Tree trimming,1197.69
+08/28/2026,Invoice,INV-10265,Green Thumb Landscaping,Emergency callout,927.8
+08/04/2026,Invoice,INV-10266,Precision Painting Inc,Lawn maintenance,1037.98
+08/29/2026,Invoice,INV-10267,Sunrise Cleaning Co,Appliance repair,439.62
+08/06/2026,Invoice,INV-10269,Allied Appliance Repair,Drain cleaning,2232.12
+08/06/2026,Invoice,INV-10269,Allied Appliance Repair,Drain cleaning,2232.12
+08/14/2026,Invoice,INV-10270,Northside Pest Control,Pest treatment,2091.4
+08/14/2026,Invoice,INV-10270,Northside Pest Control,Pest treatment,2091.4
+08/17/2026,Invoice,INV-10271,Dave's Plumbing & Rooter,Roof inspection,2243.65
+08/04/2026,Invoice,INV-10272,Bay Area Electric,Interior paint,1440.53
+09/24/2026,Invoice,INV-10273,Northside Pest Control,Appliance repair,1330.97
+09/06/2026,Invoice,INV-10276,Precision Painting Inc,Tree trimming,1311.94
+09/06/2026,Invoice,INV-10276,Precision Painting Inc,Tree trimming,1311.94
+08/16/2026,Invoice,INV-10277,Rapid Rooter Solutions,Pool opening,725.6
+08/01/2026,Invoice,INV-10278,Desert Air Conditioning,Panel upgrade,1164.89
+08/09/2026,Invoice,INV-10279,Allied Appliance Repair,Panel upgrade,2247.83
+09/23/2026,Invoice,INV-10280,Martinez HVAC Services,Pest treatment,1358.54
+09/12/2026,Invoice,INV-10281,Allied Appliance Repair,Drain cleaning,1983.0
+08/08/2026,Invoice,INV-10282,Martinez HVAC Services,Panel upgrade,2148.54
+08/08/2026,Invoice,INV-10282,Martinez HVAC Services,Panel upgrade,2148.54
+08/14/2026,Invoice,INV-10283,Bay Area Electric,Tree trimming,1756.16
+09/24/2026,Invoice,INV-10284,Northside Pest Control,Roof inspection,235.82
+09/10/2026,Invoice,INV-10285,Elite Lawn Care,AC tune-up,2353.94
+08/08/2026,Invoice,INV-10286,Allied Appliance Repair,Drain cleaning,291.56
+09/25/2026,Invoice,INV-10289,Elite Lawn Care,Appliance repair,1046.54
+09/25/2026,Invoice,INV-10289,Elite Lawn Care,Appliance repair,1046.54
+09/25/2026,Invoice,INV-10290,Desert Air Conditioning,Deep clean,490.5
+09/25/2026,Invoice,INV-10290,Desert Air Conditioning,Deep clean,490.5
+08/12/2026,Invoice,INV-10291,Summit Roofing LLC,Drain cleaning,1799.37
+09/21/2026,Invoice,INV-10292,Metro Window Cleaning,Emergency callout,685.82
+08/15/2026,Invoice,INV-10293,Dave's Plumbing & Rooter,Pest treatment,561.11
+08/26/2026,Invoice,INV-10294,Precision Painting Inc,Deep clean,868.44
+09/11/2026,Journal Entry,JE-621,Summit Roofing LLC,Manual adjustment,71.81
+09/23/2026,Journal Entry,JE-649,Clearwater Pool Service,Manual adjustment,175.69
+08/08/2026,Journal Entry,JE-998,Bay Area Electric,Manual adjustment,-128.57
