@@ -11,7 +11,7 @@ from reconcile import COMPARE_MODES, reconcile
 st.set_page_config(page_title="Books Match — Jobber ↔ QuickBooks", page_icon="🧾", layout="wide")
 
 # Set to a mailto: or booking link to show a "talk to us" button under the results.
-CONTACT_LINK = ""
+CONTACT_LINK = "https://santhanakris.gumroad.com/coffee"
 
 JOBBER_RENAME_TO = {
     "invoice_number": "Invoice #",
@@ -446,4 +446,4 @@ st.markdown(
     unsafe_allow_html=True,
 )
 if CONTACT_LINK:
-    st.link_button("💬 Talk to us / get early access", CONTACT_LINK, use_container_width=True)
+    st.link_button("💛 If this caught something real, chip in", CONTACT_LINK, use_container_width=True)
