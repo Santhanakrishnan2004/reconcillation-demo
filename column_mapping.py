@@ -22,15 +22,19 @@ FIELD_ALIASES = {
     "invoice_number": [
         "Invoice #", "Invoice Number", "Invoice No", "Inv #", "InvoiceNum",
         "Num", "Ref No.", "Reference No", "Doc Number", "Document Number", "Transaction ID",
+        "Order #", "Order Number", "Receipt #", "Job #",
     ],
     "client": [
         "Client", "Customer", "Customer Name", "Name", "Client Name", "Payee",
+        "Buyer", "Account Name",
     ],
     "date": [
         "Date", "Invoice Date", "Txn Date", "Transaction Date", "Create Date", "Posting Date",
+        "Sale Date", "Order Date",
     ],
     "amount": [
         "Amount", "Total", "Invoice Amount", "Amount Due", "Debit", "Open Balance", "Line Amount",
+        "Grand Total", "Net Amount", "Charge Amount",
     ],
 }
 
@@ -45,14 +49,15 @@ def guess_mapping(columns: list[str]) -> dict:
     guesses = {}
     used = set()
     for field, aliases in FIELD_ALIASES.items():
-        best_col, best_score = None, 0
+        best_col, best_score, best_rank = None, 0, len(aliases)
         for col in columns:
             if col in used:
                 continue
-            for alias in aliases:
+            for rank, alias in enumerate(aliases):
                 score = fuzz.token_sort_ratio(str(col).lower(), alias.lower())
-                if score > best_score:
-                    best_col, best_score = col, score
+                # On a tie, the alias listed earlier wins (e.g. "Invoice #" beats "Job #").
+                if score > best_score or (score == best_score and rank < best_rank):
+                    best_col, best_score, best_rank = col, score, rank
         # Require a reasonably confident match before auto-filling —
         # otherwise leave it blank and make the user pick.
         if best_score >= 70:

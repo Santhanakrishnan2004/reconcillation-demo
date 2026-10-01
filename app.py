@@ -8,18 +8,20 @@ import streamlit as st
 from column_mapping import apply_mapping, guess_mapping, load_table, suggest_extra_pairs
 from reconcile import COMPARE_MODES, reconcile
 
-st.set_page_config(page_title="Books Match — Jobber ↔ QuickBooks", page_icon="🧾", layout="wide")
+st.set_page_config(
+    page_title="Books Match — Jobber ↔ QuickBooks", page_icon="🧾", layout="wide"
+)
 
 # Set to a mailto: or booking link to show a "talk to us" button under the results.
 CONTACT_LINK = "https://santhanakris.gumroad.com/coffee"
 
-JOBBER_RENAME_TO = {
+SIDE_A_RENAME_TO = {
     "invoice_number": "Invoice #",
     "client": "Client",
     "date": "Invoice Date",
     "amount": "Amount",
 }
-QB_RENAME_TO = {
+SIDE_B_RENAME_TO = {
     "invoice_number": "Num",
     "client": "Name",
     "date": "Date",
@@ -34,18 +36,42 @@ FIELD_LABELS = {
 NOT_IN_FILE = "— not in this file —"
 
 ISSUE_META = {
-    "DUPLICATE": ("🔁", "Duplicate sync", "#E5484D",
-                  "Same invoice landed in QuickBooks more than once — revenue is overstated."),
-    "MISSING": ("❌", "Never synced", "#F76B15",
-                "Invoice exists in Jobber but QuickBooks has no record of it."),
-    "AMOUNT_MISMATCH": ("💲", "Amount mismatch", "#FFB224",
-                        "Same invoice, different dollar amount — often fees, tax or edits after sync."),
-    "DATE_MISMATCH": ("📅", "Date drift", "#8E4EC6",
-                      "Amounts agree but dates don't — can push revenue into the wrong period."),
-    "FIELD_MISMATCH": ("🧩", "Column mismatch", "#3E63DD",
-                       "A column you chose to compare disagrees between the two systems."),
-    "QB_ONLY": ("❓", "Only in QuickBooks", "#6B7B73",
-                "Entries with no Jobber counterpart — manual adjustments worth a look."),
+    "DUPLICATE": (
+        "🔁",
+        "Duplicate sync",
+        "#E5484D",
+        "Same invoice landed in QuickBooks more than once — revenue is overstated.",
+    ),
+    "MISSING": (
+        "❌",
+        "Never synced",
+        "#F76B15",
+        "Invoice exists in Jobber but QuickBooks has no record of it.",
+    ),
+    "AMOUNT_MISMATCH": (
+        "💲",
+        "Amount mismatch",
+        "#FFB224",
+        "Same invoice, different dollar amount — often fees, tax or edits after sync.",
+    ),
+    "DATE_MISMATCH": (
+        "📅",
+        "Date drift",
+        "#8E4EC6",
+        "Amounts agree but dates don't — can push revenue into the wrong period.",
+    ),
+    "FIELD_MISMATCH": (
+        "🧩",
+        "Column mismatch",
+        "#3E63DD",
+        "A column you chose to compare disagrees between the two systems.",
+    ),
+    "QB_ONLY": (
+        "❓",
+        "Only in QuickBooks",
+        "#6B7B73",
+        "Entries with no Jobber counterpart — manual adjustments worth a look.",
+    ),
 }
 
 # ---------------------------------------------------------------- styles
@@ -115,8 +141,10 @@ def step(num, title, sub=""):
 
 
 def kpi(label, value, hint="", alert=False):
-    return (f'<div class="kpi{" alert" if alert else ""}"><div class="label">{label}</div>'
-            f'<div class="value">{value}</div><div class="hint">{hint}</div></div>')
+    return (
+        f'<div class="kpi{" alert" if alert else ""}"><div class="label">{label}</div>'
+        f'<div class="value">{value}</div><div class="hint">{hint}</div></div>'
+    )
 
 
 def chip(text, side, extra=False):
@@ -136,13 +164,18 @@ st.markdown(
   <span class="pill">🧠 Works with your column names</span>
   <span class="pill">🔒 Processed in memory, nothing stored</span>
   <span class="pill">💸 Free, no signup</span>
+  <span class="pill">🔄 Also works with ServiceTitan, Housecall Pro, Square & Stripe exports</span>
 </div>
 """,
     unsafe_allow_html=True,
 )
 
 # ---------------------------------------------------------------- step 1: upload
-step(1, "Bring your two exports", "CSV or Excel. Jobber's Invoices report and QuickBooks' Transaction List both work.")
+step(
+    1,
+    "Bring your two exports",
+    "CSV or Excel. Jobber's Invoices report and QuickBooks' Transaction List both work.",
+)
 
 if "use_sample" not in st.session_state:
     st.session_state.use_sample = False
@@ -151,18 +184,28 @@ u1, u2 = st.columns(2)
 with u1:
     with st.container(border=True):
         st.markdown("##### 🟢 Jobber export")
-        jobber_file = st.file_uploader("Jobber export", type=["csv", "xlsx"], key="jobber",
-                                       label_visibility="collapsed")
+        jobber_file = st.file_uploader(
+            "Jobber export",
+            type=["csv", "xlsx"],
+            key="jobber",
+            label_visibility="collapsed",
+        )
 with u2:
     with st.container(border=True):
         st.markdown("##### 🔵 QuickBooks export")
-        qb_file = st.file_uploader("QuickBooks export", type=["csv", "xlsx"], key="qb",
-                                   label_visibility="collapsed")
+        qb_file = st.file_uploader(
+            "QuickBooks export",
+            type=["csv", "xlsx"],
+            key="qb",
+            label_visibility="collapsed",
+        )
 
 if not (jobber_file and qb_file) and not st.session_state.use_sample:
     s1, s2, s3 = st.columns([1, 1.2, 1])
     with s2:
-        if st.button("✨ No files handy? Try it with sample data", use_container_width=True):
+        if st.button(
+            "✨ No files handy? Try it with sample data", use_container_width=True
+        ):
             st.session_state.use_sample = True
 
 jobber_raw = qb_raw = None
@@ -174,9 +217,13 @@ if jobber_file and qb_file:
         st.error(f"Couldn't read one of those files: {e}")
         st.stop()
 elif st.session_state.use_sample:
-    jobber_raw, qb_raw = load_table("jobber_invoices.csv"), load_table("quickbooks_export.csv")
+    jobber_raw, qb_raw = load_table("jobber_invoices.csv"), load_table(
+        "quickbooks_export.csv"
+    )
     source = "sample"
-    st.info("📎 Using sample data (60 synthetic invoices). Upload your own files above to check your real books.")
+    st.info(
+        "📎 Using sample data (60 synthetic invoices). Upload your own files above to check your real books."
+    )
 
 if jobber_raw is None:
     st.markdown("")
@@ -184,9 +231,21 @@ if jobber_raw is None:
     for col, (icon, title, text) in zip(
         (c1, c2, c3),
         [
-            ("📤", "Upload", "Export invoices from Jobber and transactions from QuickBooks."),
-            ("🔗", "Match columns", "We guess which column is which. Add any extra columns you want checked."),
-            ("✅", "Get a fix list", "See every mismatch with the dollar impact, then download it as a CSV."),
+            (
+                "📤",
+                "Upload",
+                "Export invoices from Jobber and transactions from QuickBooks.",
+            ),
+            (
+                "🔗",
+                "Match columns",
+                "We guess which column is which. Add any extra columns you want checked.",
+            ),
+            (
+                "✅",
+                "Get a fix list",
+                "See every mismatch with the dollar impact, then download it as a CSV.",
+            ),
         ],
     ):
         with col:
@@ -195,11 +254,16 @@ if jobber_raw is None:
     st.stop()
 
 # Widget keys include a fingerprint of the data so switching files resets the mapping.
-sig = hashlib.md5((source + "|".join(jobber_raw.columns) + "|".join(qb_raw.columns)).encode()).hexdigest()[:8]
+sig = hashlib.md5(
+    (source + "|".join(jobber_raw.columns) + "|".join(qb_raw.columns)).encode()
+).hexdigest()[:8]
 
 # ---------------------------------------------------------------- step 2: mapping
-step(2, "Line up your columns",
-     "Every business exports a little differently. We pre-filled our best guess, so check it and adjust if needed.")
+step(
+    2,
+    "Line up your columns",
+    "Every business exports a little differently. We pre-filled our best guess, so check it and adjust if needed.",
+)
 
 
 def mapping_ui(df, side_label, icon, prefix):
@@ -207,18 +271,25 @@ def mapping_ui(df, side_label, icon, prefix):
     options = [NOT_IN_FILE] + list(df.columns)
     confirmed = {}
     with st.container(border=True):
-        st.markdown(f"##### {icon} {side_label} · {len(df):,} rows · {len(df.columns)} columns")
+        st.markdown(
+            f"##### {icon} {side_label} · {len(df):,} rows · {len(df.columns)} columns"
+        )
         grid = st.columns(2)
         for i, (field, label) in enumerate(FIELD_LABELS.items()):
             default = guesses.get(field)
             with grid[i % 2]:
-                choice = st.selectbox(label, options,
-                                      index=options.index(default) if default in options else 0,
-                                      key=f"{prefix}_{field}_{sig}")
+                choice = st.selectbox(
+                    label,
+                    options,
+                    index=options.index(default) if default in options else 0,
+                    key=f"{prefix}_{field}_{sig}",
+                )
             confirmed[field] = None if choice == NOT_IN_FILE else choice
         with st.expander("Preview file"):
             mapped = [c for c in confirmed.values() if c]
-            styled = df.head(8).style.set_properties(subset=mapped, **{"background-color": "#E6F6EF"})
+            styled = df.head(8).style.set_properties(
+                subset=mapped, **{"background-color": "#E6F6EF"}
+            )
             st.dataframe(styled, use_container_width=True, hide_index=True)
     return confirmed
 
@@ -230,19 +301,32 @@ with m2:
     qb_mapping = mapping_ui(qb_raw, "QuickBooks", "🔵", "qm")
 
 # ---- extra column pairs
-st.markdown("#### ➕ Compare more columns <span style='font-size:.85rem;color:#7A8A82;font-weight:400'>optional</span>",
-            unsafe_allow_html=True)
-st.caption("Pick any column from each file to check on every matched invoice, like joining two tables. "
-           "We pre-filled pairs that look related. Add a row for anything else you care about "
-           "(job description, status, tax, due date…).")
+st.markdown(
+    "#### ➕ Compare more columns <span style='font-size:.85rem;color:#7A8A82;font-weight:400'>optional</span>",
+    unsafe_allow_html=True,
+)
+st.caption(
+    "Pick any column from each file to check on every matched invoice, like joining two tables. "
+    "We pre-filled pairs that look related. Add a row for anything else you care about "
+    "(job description, status, tax, due date…)."
+)
 
 suggested = suggest_extra_pairs(
-    jobber_raw, qb_raw,
-    {c for c in jobber_mapping.values() if c}, {c for c in qb_mapping.values() if c},
+    jobber_raw,
+    qb_raw,
+    {c for c in jobber_mapping.values() if c},
+    {c for c in qb_mapping.values() if c},
 )
 pairs_seed = pd.DataFrame(
-    [{"Check": True, "Jobber column": p["jobber_col"], "QuickBooks column": p["qb_col"], "Compare as": p["mode"]}
-     for p in suggested],
+    [
+        {
+            "Check": True,
+            "Jobber column": p["jobber_col"],
+            "QuickBooks column": p["qb_col"],
+            "Compare as": p["mode"],
+        }
+        for p in suggested
+    ],
     columns=["Check", "Jobber column", "QuickBooks column", "Compare as"],
 )
 if pairs_seed.empty:
@@ -256,19 +340,28 @@ edited = st.data_editor(
     use_container_width=True,
     column_config={
         "Check": st.column_config.CheckboxColumn("On", width="small", default=True),
-        "Jobber column": st.column_config.SelectboxColumn("🟢 Jobber column", options=list(jobber_raw.columns)),
-        "QuickBooks column": st.column_config.SelectboxColumn("🔵 QuickBooks column", options=list(qb_raw.columns)),
+        "Jobber column": st.column_config.SelectboxColumn(
+            "🟢 Jobber column", options=list(jobber_raw.columns)
+        ),
+        "QuickBooks column": st.column_config.SelectboxColumn(
+            "🔵 QuickBooks column", options=list(qb_raw.columns)
+        ),
         "Compare as": st.column_config.SelectboxColumn(
-            "Compare as", options=COMPARE_MODES, default="Text (exact)",
+            "Compare as",
+            options=COMPARE_MODES,
+            default="Text (exact)",
             help="Text (exact) ignores case and spacing. Text (fuzzy) tolerates typos. "
-                 "Number and Date understand formatting like $1,200.00 or 08/02/2026.",
+            "Number and Date understand formatting like $1,200.00 or 08/02/2026.",
         ),
     },
 )
 extra_pairs = [
     {
-        "label": r["Jobber column"] if r["Jobber column"] == r["QuickBooks column"]
-        else f"{r['Jobber column']} ↔ {r['QuickBooks column']}",
+        "label": (
+            r["Jobber column"]
+            if r["Jobber column"] == r["QuickBooks column"]
+            else f"{r['Jobber column']} ↔ {r['QuickBooks column']}"
+        ),
         "jobber_col": r["Jobber column"],
         "qb_col": r["QuickBooks column"],
         "mode": r["Compare as"] or "Text (exact)",
@@ -296,23 +389,39 @@ st.markdown(
 
 with st.expander("⚙️ Matching rules"):
     r1, r2 = st.columns(2)
-    amount_tol = r1.number_input("Ignore amount differences under ($)", min_value=0.0, value=1.0, step=0.5,
-                                 help="Rounding pennies aren't worth flagging. Set to 0 to catch everything.")
-    date_tol = r2.slider("Allow dates to differ by up to (days)", 0, 7, 0,
-                         help="Some syncs post a day late. Raise this to stop flagging those.")
+    amount_tol = r1.number_input(
+        "Ignore amount differences under ($)",
+        min_value=0.0,
+        value=1.0,
+        step=0.5,
+        help="Rounding pennies aren't worth flagging. Set to 0 to catch everything.",
+    )
+    date_tol = r2.slider(
+        "Allow dates to differ by up to (days)",
+        0,
+        7,
+        0,
+        help="Some syncs post a day late. Raise this to stop flagging those.",
+    )
 
-missing = [FIELD_LABELS[f] for f in FIELD_LABELS if not (jobber_mapping[f] and qb_mapping[f])]
+missing = [
+    FIELD_LABELS[f] for f in FIELD_LABELS if not (jobber_mapping[f] and qb_mapping[f])
+]
 if missing:
     st.warning(f"Pick a column on both sides for: **{', '.join(missing)}**")
 
 st.markdown("")
-run = st.button(f"🔍 Find the mismatches ({len(FIELD_LABELS) + len(extra_pairs)} column pairs)",
-                type="primary", use_container_width=True, disabled=bool(missing))
+run = st.button(
+    f"🔍 Find the mismatches ({len(FIELD_LABELS) + len(extra_pairs)} column pairs)",
+    type="primary",
+    use_container_width=True,
+    disabled=bool(missing),
+)
 
 if run:
     try:
-        jobber_df = apply_mapping(jobber_raw, jobber_mapping, JOBBER_RENAME_TO)
-        qb_df = apply_mapping(qb_raw, qb_mapping, QB_RENAME_TO)
+        jobber_df = apply_mapping(jobber_raw, jobber_mapping, SIDE_A_RENAME_TO)
+        qb_df = apply_mapping(qb_raw, qb_mapping, SIDE_B_RENAME_TO)
     except ValueError as e:
         st.error(str(e))
         st.stop()
@@ -340,27 +449,48 @@ clean = summary["clean_matches"]
 health = round(100 * clean / total) if total else 100
 ring_color = "#0E9F6E" if health >= 85 else "#FFB224" if health >= 60 else "#E5484D"
 
-step(3, "Here's what we found", f"{total:,} Jobber invoices checked against {summary['total_qb_transactions']:,} "
-     "QuickBooks transactions.")
+step(
+    3,
+    "Here's what we found",
+    f"{total:,} Jobber invoices checked against {summary['total_qb_transactions']:,} "
+    "QuickBooks transactions.",
+)
 
 h, k1, k2, k3 = st.columns([1.5, 1, 1, 1])
 h.markdown(
     f'<div class="health"><div class="ring" style="background:conic-gradient({ring_color} {health * 3.6}deg,'
     f' #E8EEEB 0)"><div class="inner"><div class="pct">{health}%</div><div class="cap">in sync</div></div></div>'
     f'<div><b>Books health</b><br><span style="color:#5B6B63;font-size:.9rem">{clean} of {total} invoices match '
-    f'cleanly across every column you checked.</span></div></div>',
+    f"cleanly across every column you checked.</span></div></div>",
     unsafe_allow_html=True,
 )
-k1.markdown(kpi("Issues found", f"{len(issues):,}", "across all checks", alert=len(issues) > 0),
-            unsafe_allow_html=True)
-k2.markdown(kpi("Dollars at risk", f"${summary['likely_dollar_impact']:,.0f}", "duplicates + amount gaps",
-                alert=summary["likely_dollar_impact"] > 0), unsafe_allow_html=True)
-k3.markdown(kpi("Clients affected", f"{issues['client'].nunique():,}" if len(issues) else "0",
-                "need a follow-up"), unsafe_allow_html=True)
+k1.markdown(
+    kpi("Issues found", f"{len(issues):,}", "across all checks", alert=len(issues) > 0),
+    unsafe_allow_html=True,
+)
+k2.markdown(
+    kpi(
+        "Dollars at risk",
+        f"${summary['likely_dollar_impact']:,.0f}",
+        "duplicates + amount gaps",
+        alert=summary["likely_dollar_impact"] > 0,
+    ),
+    unsafe_allow_html=True,
+)
+k3.markdown(
+    kpi(
+        "Clients affected",
+        f"{issues['client'].nunique():,}" if len(issues) else "0",
+        "need a follow-up",
+    ),
+    unsafe_allow_html=True,
+)
 
 if issues.empty:
     st.balloons()
-    st.success("🎉 Everything lines up. Your Jobber and QuickBooks records are in sync.")
+    st.success(
+        "🎉 Everything lines up. Your Jobber and QuickBooks records are in sync."
+    )
     st.stop()
 
 st.markdown("")
@@ -376,7 +506,10 @@ with left:
         )
 with right:
     chart_df = pd.DataFrame(
-        [{"Issue": ISSUE_META.get(t, ("", t))[1], "Count": n} for t, n in counts.items()]
+        [
+            {"Issue": ISSUE_META.get(t, ("", t))[1], "Count": n}
+            for t, n in counts.items()
+        ]
     )
     domain = [ISSUE_META[t][1] for t in counts if t in ISSUE_META]
     colors = [ISSUE_META[t][2] for t in counts if t in ISSUE_META]
@@ -385,8 +518,11 @@ with right:
         .mark_arc(innerRadius=70, cornerRadius=4, padAngle=0.015)
         .encode(
             theta="Count:Q",
-            color=alt.Color("Issue:N", scale=alt.Scale(domain=domain, range=colors),
-                            legend=alt.Legend(orient="right", title=None, labelFontSize=12)),
+            color=alt.Color(
+                "Issue:N",
+                scale=alt.Scale(domain=domain, range=colors),
+                legend=alt.Legend(orient="right", title=None, labelFontSize=12),
+            ),
             tooltip=["Issue", "Count"],
         )
         .properties(height=260, title="Issue breakdown")
@@ -397,8 +533,11 @@ with right:
     bars = (
         alt.Chart(top_clients)
         .mark_bar(cornerRadiusEnd=4, color="#0E9F6E")
-        .encode(x=alt.X("Issues:Q", axis=alt.Axis(tickMinStep=1)),
-                y=alt.Y("client:N", sort="-x", title=None), tooltip=["client", "Issues"])
+        .encode(
+            x=alt.X("Issues:Q", axis=alt.Axis(tickMinStep=1)),
+            y=alt.Y("client:N", sort="-x", title=None),
+            tooltip=["client", "Issues"],
+        )
         .properties(height=200, title="Clients with the most issues")
     )
     st.altair_chart(bars, use_container_width=True)
@@ -413,26 +552,49 @@ table_cfg = {
     "qb_amount": st.column_config.NumberColumn("QuickBooks $", format="$%.2f"),
     "detail": st.column_config.TextColumn("What's wrong", width="large"),
 }
-display = issues.assign(type=issues["type"].map(lambda t: " ".join(ISSUE_META.get(t, ("", t))[:2])))
+display = issues.assign(
+    type=issues["type"].map(lambda t: " ".join(ISSUE_META.get(t, ("", t))[:2]))
+)
 
-search = st.text_input("Search", placeholder="🔎 Filter by invoice #, client or detail…", label_visibility="collapsed")
+search = st.text_input(
+    "Search",
+    placeholder="🔎 Filter by invoice #, client or detail…",
+    label_visibility="collapsed",
+)
 if search:
-    mask = display.apply(lambda r: r.astype(str).str.contains(search, case=False, regex=False).any(), axis=1)
+    mask = display.apply(
+        lambda r: r.astype(str).str.contains(search, case=False, regex=False).any(),
+        axis=1,
+    )
     display = display[mask]
 
-tabs = st.tabs([f"All ({len(display)})"] + [
-    f"{ISSUE_META.get(t, ('', t))[0]} {ISSUE_META.get(t, ('', t))[1]} ({(issues.loc[display.index, 'type'] == t).sum()})"
-    for t in counts
-])
+tabs = st.tabs(
+    [f"All ({len(display)})"]
+    + [
+        f"{ISSUE_META.get(t, ('', t))[0]} {ISSUE_META.get(t, ('', t))[1]} ({(issues.loc[display.index, 'type'] == t).sum()})"
+        for t in counts
+    ]
+)
 with tabs[0]:
-    st.dataframe(display, use_container_width=True, hide_index=True, column_config=table_cfg)
+    st.dataframe(
+        display, use_container_width=True, hide_index=True, column_config=table_cfg
+    )
 for tab, t in zip(tabs[1:], counts):
     with tab:
-        st.dataframe(display[issues.loc[display.index, "type"] == t].drop(columns="type"),
-                     use_container_width=True, hide_index=True, column_config=table_cfg)
+        st.dataframe(
+            display[issues.loc[display.index, "type"] == t].drop(columns="type"),
+            use_container_width=True,
+            hide_index=True,
+            column_config=table_cfg,
+        )
 
-st.download_button("⬇️ Download the full fix list (CSV)", issues.to_csv(index=False),
-                   file_name="books_match_report.csv", mime="text/csv", use_container_width=True)
+st.download_button(
+    "⬇️ Download the full fix list (CSV)",
+    issues.to_csv(index=False),
+    file_name="books_match_report.csv",
+    mime="text/csv",
+    use_container_width=True,
+)
 
 st.markdown(
     """
@@ -446,4 +608,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 if CONTACT_LINK:
-    st.link_button("💛 If this caught something real, chip in", CONTACT_LINK, use_container_width=True)
+    st.link_button(
+        "💛 If this caught something real, chip in",
+        CONTACT_LINK,
+        use_container_width=True,
+    )

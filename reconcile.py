@@ -121,16 +121,20 @@ def reconcile(
         if len(candidates) == 0:
             # fall back to fuzzy match before declaring it missing
             best_idx, best_score = None, 0
-            for idx, qrow in qb.iterrows():
+            # Only rows with a close amount can match, so filter on that first
+            # (vectorized) instead of fuzzy-scoring every QuickBooks row.
+            j_amt = 0 if pd.isna(jrow["_amount"]) else jrow["_amount"]
+            close = qb.index[(qb["_amount"].fillna(0) - j_amt).abs() < max(amount_tolerance, 0.01)]
+            for idx in close:
                 if idx in matched_qb_idx:
                     continue
+                qrow = qb.loc[idx]
                 name_score = fuzz.token_sort_ratio(str(jrow["Client"]), str(qrow["Name"]))
-                amount_close = abs((jrow["_amount"] or 0) - (qrow["_amount"] or 0)) < max(amount_tolerance, 0.01)
                 date_close = (
                     pd.notna(jrow["_date"]) and pd.notna(qrow["_date"])
                     and abs((jrow["_date"] - qrow["_date"]).days) <= max(5, date_tolerance_days)
                 )
-                if name_score > 80 and amount_close and date_close:
+                if name_score > 80 and date_close:
                     if name_score > best_score:
                         best_idx, best_score = idx, name_score
             if best_idx is not None:
